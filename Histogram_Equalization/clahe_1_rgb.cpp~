@@ -1,0 +1,44 @@
+#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <iostream>
+#include <sys/time.h>
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+
+	struct timeval t0,t1,t2,t3,t4;
+	
+	static Mat I_RGB;
+	static Mat O_RGB;
+	
+	I_RGB=imread("sample.png");
+	int scale = 2 ;
+	Size size(I_RGB.cols/scale,I_RGB.rows/scale);
+	int imgSize= (I_RGB.cols/scale)*(I_RGB.rows/scale);
+
+	resize(I_RGB,O_RGB,size);
+	imshow("RGB Image" , O_RGB);
+	waitKey(30);
+	gettimeofday(&t0,0);
+	Ptr<CLAHE> clahe = createCLAHE(4.0, cv::Size(8,8));
+		
+	Mat O_HIST;
+	clahe->apply(O_GRAY,O_HIST);
+	
+	gettimeofday(&t1,0);
+	long elapsed = t1.tv_usec-t0.tv_usec;
+	cout << "Time :"<<  double(elapsed)/1000000 << endl;
+	
+	cout << "done " <<endl;
+
+	while(true){
+		imshow("CLAHE Image",O_HIST);
+		waitKey(30);
+	}
+	
+	return 0;
+
+}
